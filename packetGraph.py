@@ -1,8 +1,3 @@
-#for index in range(len(list))
-# print (80 * "-")
-# for i in range(15):
-#     print()
-# print (80 * "-")
 import random, time
 import os
 
@@ -41,8 +36,50 @@ def visualize():
         print(line)
     print(80 * "-")
 
-while True:
-    number = random.randint(1, 500)
-    allPackets = addNumber(number)
-    visualize()
-    time.sleep(0.1)
+def showESP():
+    pass
+
+def showIface():
+    pass
+
+def showDemo():
+    while True:
+        number = random.randint(1, 500)
+        allPackets = addNumber(number)
+        visualize()
+        time.sleep(0.1)
+
+def header():
+    header = """
+                      __        __  ______                 __
+    ____  ____ ______/ /_____  / /_/ ____/________ _____  / /_
+   / __ \/ __ `/ ___/ //_/ _ \/ __/ / __/ ___/ __ `/ __ \/ __ \\
+  / /_/ / /_/ / /__/ ,< /  __/ /_/ /_/ / /  / /_/ / /_/ / / / /
+ / .___/\__,_/\___/_/|_|\___/\__/\____/_/   \__,_/ .___/_/ /_/
+/_/                                             /_/
+"""
+    print(header)
+
+def menu():
+    print("\n\t[1] - Show traffic from ESP")
+    print("\t[2] - Show traffic from wireless interface")
+    print("\t[3] - Show traffic from random numbers\n")
+    option = input("menu> ")
+    if option == "1":
+        print("[+] Starting ESP traffic visualizer...")
+        time.sleep(0.5)
+        showESP()
+    elif option == "2":
+        print("[+] Starting WiFi Interface traffic visualizer...")
+        time.sleep(0.5)
+        showIface()
+    elif option == "3":
+        print("[+] Starting Demo visualizer...")
+        time.sleep(0.5)
+        showDemo()
+    else:
+        print("[!] Please choose a number from the list.")
+        menu()
+
+header()
+menu()

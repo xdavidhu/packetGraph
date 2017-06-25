@@ -32,11 +32,11 @@ snifferthread = threading.Thread(target=sniffer)
 snifferthread.daemon = True
 snifferthread.start()
 
-
-while True:
-    if sniffStarted:
-        curTs = int(round(time.time() * 1000))
-        if curTs - prevTs > 1000:
-            prevTs = curTs
-            print(packets)
-            packets = 0
+def main():
+    packets = 0
+    while True:
+        if sniffStarted:
+            curTs = int(round(time.time() * 1000))
+            if curTs - prevTs > 1000:
+                prevTs = curTs
+                return(packets)
