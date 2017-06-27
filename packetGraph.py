@@ -7,9 +7,11 @@ scr_widht = 80
 allPackets = []
 # IFACE SNIFFER VARIABLES
 ifacePackets = 0
+channel = ""
 monitor_iface = ""
 stoppingIface = False
 sniffStarted = False
+sniffError = False
 
 def get_multiplicator():
     largestInt = 0
@@ -44,7 +46,9 @@ def visualize():
                 line = line + " "
         graph = graph + line + "\n"
     graph += 80 * "-" + "\n"
-    graph += str(allPackets[-1]) + " packets/sec - interface: " + str(monitor_iface) + "\n"
+    if sniffStarted:
+        graph += str(allPackets[-1]) + " packets/sec - interface: " + \
+        str(monitor_iface) + " - channel: " + str(channel) + "\n"
     print(graph)
 
 def showESP():
@@ -55,37 +59,58 @@ def ifaceCounter(pckt):
     ifacePackets += 1
 
 def ifaceSniffer():
+    import sys, logging
+    logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
     from scapy.all import sniff
     global stoppingIface
     global monitor_iface
     global sniffStarted
+    global sniffError
     while True:
         if not stoppingIface:
             try:
                 sniffStarted = True
                 sniff(iface=monitor_iface, prn=ifaceCounter)
             except:
-                print("[!] An error occurred with the wireless inteface...")
-                time.sleep(5)
+                sniffError = True
+                sys.exit()
         else:
             sys.exit()
 
 def showIface():
     import time, threading
     global allPackets
+    global stoppingIface
     global ifacePackets
+    global sniffStarted
+    global sniffError
     snifferthread = threading.Thread(target=ifaceSniffer)
     snifferthread.daemon = True
     snifferthread.start()
     curTs = int(round(time.time() * 1000))
     prevTs = int(round(time.time() * 1000))
+    printedLoading = False
     while True:
-        curTs = int(round(time.time() * 1000))
-        if curTs - prevTs > 1000:
-            prevTs = curTs
-            allPackets = addNumber(ifacePackets)
-            ifacePackets = 0
-            visualize()
+        try:
+            if sniffStarted:
+                if sniffError:
+                    print("[!] Something went wrong with the wireless interface. Exiting...")
+                    stoppingIface = True
+                    exit()
+                curTs = int(round(time.time() * 1000))
+                if curTs - prevTs > 1000:
+                    prevTs = curTs
+                    allPackets = addNumber(ifacePackets)
+                    ifacePackets = 0
+                    visualize()
+            else:
+                if not printedLoading:
+                    print("\n[+] Starting WiFi Interface traffic visualizer...")
+                    printedLoading = True
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            stoppingIface = True
+            exit()
 
 
 def showDemo():
@@ -119,9 +144,13 @@ def menu():
         showESP()
     elif option == "2":
         global monitor_iface
+        global channel
         print("\n[?] Please enter the name of your WiFi interface (in monitor mode):\n")
         monitor_iface = input("interface> ")
-        print("[+] Starting WiFi Interface traffic visualizer...")
+        print("\n[?] Please select which channel to use:\n")
+        channel = input("channel> ")
+        print("\n[+] Setting channel to " + str(channel) + "...")
+        os.system("iwconfig " + monitor_iface + " channel " + str(channel))
         time.sleep(0.5)
         showIface()
     elif option == "3":
