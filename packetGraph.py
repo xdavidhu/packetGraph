@@ -7,11 +7,18 @@ scr_widht = 80
 allPackets = []
 # IFACE SNIFFER VARIABLES
 ifacePackets = 0
-channel = ""
+ifaceChannel = ""
 monitor_iface = ""
 stoppingIface = False
 sniffStarted = False
 sniffError = False
+# ESP VARTIABLES
+serialport = ""
+boardRate = 0
+ser = ""
+espChannel = 1
+espStarted = False
+stoppingEsp = False
 
 def get_multiplicator():
     largestInt = 0
@@ -48,11 +55,54 @@ def visualize():
     graph += 80 * "-" + "\n"
     if sniffStarted:
         graph += str(allPackets[-1]) + " packets/sec - interface: " + \
-        str(monitor_iface) + " - channel: " + str(channel) + "\n"
+        str(monitor_iface) + " - channel: " + str(ifaceChannel) + "\n"
+    elif espStarted:
+        global ser
+        graph += str(allPackets[-1]) + " packets/sec - connection: " + \
+        str(ser.name) + " - channel: " + str(espChannel) + "\n"
     print(graph)
 
 def showESP():
-    pass
+    import serial
+    canBreak = False
+    global serialport
+    global boardRate
+    global ser
+    global allPackets
+    global espStarted
+    global espChannel
+    print("\n[+] Connecting to device...")
+    while not canBreak:
+        try:
+            ser = serial.Serial(serialport, boardRate)
+            canBreak = True
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            exit()
+        except:
+            print("[!] Serial connection failed... Retrying...")
+            time.sleep(2)
+            continue
+    print("[+] Serial connected. Name: " + ser.name)
+    espStarted = True
+    ser.write(espChannel.encode())
+    try:
+        while True:
+            packet = ser.readline().decode("utf-8")
+            packet = packet.replace("\r\n", "")
+            try:
+                packet = int(packet)
+            except:
+                print("[!] Recived corrupted serial input... Exiting...")
+                exit()
+            allPackets = addNumber(packet)
+            visualize()
+    except KeyboardInterrupt:
+        print("\n[+] Exiting...")
+        exit()
+    except:
+        print("\n[!] Serial disconnected... Exiting...")
+        exit()
 
 def ifaceCounter(pckt):
     global ifacePackets
@@ -128,6 +178,7 @@ def header(toReturn=False):
   / /_/ / /_/ / /__/ ,< /  __/ /_/ /_/ / /  / /_/ / /_/ / / / /
  / .___/\__,_/\___/_/|_|\___/\__/\____/_/   \__,_/ .___/_/ /_/
 /_/                                             /_/
+                              v1.0 by David Schütz (@xdavidhu)
 """
     if toReturn:
         return header
@@ -139,18 +190,74 @@ def menu():
     print("\t[3] - Show traffic from random numbers\n")
     option = input("menu> ")
     if option == "1":
-        print("[+] Starting ESP traffic visualizer...")
+        global serialport
+        print("\n[!] Make sure that you flashed your ESP with @Spacehuhn's code!\n\thttps://github.com/spacehuhn")
+        try:
+            print("\n[?] Please select a serial port (default '/dev/ttyUSB0')\n")
+            serialportInput = input("serial-port> ")
+            if serialportInput == "":
+                serialport = "/dev/ttyUSB0"
+            else:
+                serialport = serialportInput
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            exit()
+        try:
+            global boardRate
+            canBreak = False
+            while not canBreak:
+                print("\n[?] Please select a baudrate (default '115200')\n")
+                boardRateInput = input("baudrate> ")
+                if boardRateInput == "":
+                    boardRate = 115200
+                    canBreak = True
+                else:
+                    try:
+                        boardRate = int(boardRateInput)
+                    except KeyboardInterrupt:
+                        print("\n[+] Exiting...")
+                        exit()
+                    except Exception as e:
+                        print("\n[!] Please enter a number!")
+                        continue
+                    canBreak = True
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            exit()
+        try:
+            global espChannel
+            canBreak = False
+            while not canBreak:
+                print("\n[?] Please select which channel to use:\n")
+                espChannelInput = input("channel> ")
+                if espChannelInput == "":
+                    print("\n[!] Please enter a number!")
+                    continue
+                else:
+                    try:
+                        espChannel = int(espChannelInput)
+                        espChannel = str(espChannelInput)
+                    except KeyboardInterrupt:
+                        print("\n[+] Exiting...")
+                        exit()
+                    except Exception as e:
+                        print("\n[!] Please enter a number!")
+                        continue
+                    canBreak = True
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            exit()
         time.sleep(0.5)
         showESP()
     elif option == "2":
         global monitor_iface
-        global channel
+        global ifaceChannel
         print("\n[?] Please enter the name of your WiFi interface (in monitor mode):\n")
         monitor_iface = input("interface> ")
         print("\n[?] Please select which channel to use:\n")
-        channel = input("channel> ")
-        print("\n[+] Setting channel to " + str(channel) + "...")
-        os.system("iwconfig " + monitor_iface + " channel " + str(channel))
+        ifaceChannel = input("channel> ")
+        print("\n[+] Setting channel to " + str(ifaceChannel) + "...")
+        os.system("iwconfig " + monitor_iface + " channel " + str(ifaceChannel))
         time.sleep(0.5)
         showIface()
     elif option == "3":
