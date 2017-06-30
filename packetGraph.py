@@ -202,100 +202,99 @@ def menu():
     print("\t[3] - Show traffic from random numbers\n")
     try:
         option = input("menu> ")
-        if option == "1":
-            global serialport
-            print("\n[!] Make sure that you flashed your ESP with @Spacehuhn's code!\n\thttps://github.com/spacehuhn")
-            try:
-                print("\n[?] Please select a serial port (default '/dev/ttyUSB0')\n")
-                serialportInput = input("serial-port> ")
-                if serialportInput == "":
-                    serialport = "/dev/ttyUSB0"
-                else:
-                    serialport = serialportInput
-                print("[+] Serial port => '" + str(serialport) + "'")
-            except KeyboardInterrupt:
-                print("\n[+] Exiting...")
-                exit()
-            try:
-                global boardRate
-                canBreak = False
-                while not canBreak:
-                    print("\n[?] Please select a baudrate (default '115200')\n")
-                    boardRateInput = input("baudrate> ")
-                    if boardRateInput == "":
-                        boardRate = 115200
-                        canBreak = True
-                    else:
-                        try:
-                            boardRate = int(boardRateInput)
-                        except KeyboardInterrupt:
-                            print("\n[+] Exiting...")
-                            exit()
-                        except Exception as e:
-                            print("\n[!] Please enter a number!")
-                            continue
-                        canBreak = True
-                    print("[+] Baudrate => '" + str(boardRate) + "'")
-            except KeyboardInterrupt:
-                print("\n[+] Exiting...")
-                exit()
-            try:
-                global espChannel
-                canBreak = False
-                while not canBreak:
-                    print("\n[?] Please select which channel to use:\n")
-                    espChannelInput = input("channel> ")
-                    if espChannelInput == "":
-                        print("\n[!] Please enter a number!")
-                        continue
-                    else:
-                        try:
-                            espChannel = int(espChannelInput)
-                            espChannel = str(espChannelInput)
-                        except KeyboardInterrupt:
-                            print("\n[+] Exiting...")
-                            exit()
-                        except Exception as e:
-                            print("\n[!] Please enter a number!")
-                            continue
-                        canBreak = True
-                    print("[+] Channel => '" + str(espChannel) + "'")
-            except KeyboardInterrupt:
-                print("\n[+] Exiting...")
-                exit()
-            time.sleep(0.5)
-            showESP()
-        elif option == "2":
-            global monitor_iface
-            global ifaceChannel
-            try:
-                print("\n[?] Please enter the name of your WiFi interface (in monitor mode):\n")
-                monitor_iface = input("interface> ")
-                print("[+] Monitor interface => '" + str(monitor_iface) + "'")
-            except KeyboardInterrupt:
-                print("\n[+] Exiting...")
-                exit()
-            try:
-                print("\n[?] Please select which channel to use:\n")
-                ifaceChannel = input("channel> ")
-                print("[+] Channel => '" + str(ifaceChannel) + "'")
-            except KeyboardInterrupt:
-                print("\n[+] Exiting...")
-                exit()
-            print("\n[+] Setting channel to " + str(ifaceChannel) + "...")
-            os.system("iwconfig " + monitor_iface + " channel " + str(ifaceChannel))
-            time.sleep(0.5)
-            showIface()
-        elif option == "3":
-            print("[+] Starting Demo visualizer...")
-            time.sleep(0.5)
-            showDemo()
-        else:
-            print("[!] Please choose a number from the list.")
-            menu()
     except KeyboardInterrupt:
         print("\n[+] Exiting...")
         exit()
-
+    if option == "1":
+        global serialport
+        print("\n[!] Make sure that you flashed your ESP with @Spacehuhn's code!\n\thttps://github.com/spacehuhn")
+        try:
+            print("\n[?] Please select a serial port (default '/dev/ttyUSB0')\n")
+            serialportInput = input("serial-port> ")
+            if serialportInput == "":
+                serialport = "/dev/ttyUSB0"
+            else:
+                serialport = serialportInput
+            print("[+] Serial port => '" + str(serialport) + "'")
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            exit()
+        try:
+            global boardRate
+            canBreak = False
+            while not canBreak:
+                print("\n[?] Please select a baudrate (default '115200')\n")
+                boardRateInput = input("baudrate> ")
+                if boardRateInput == "":
+                    boardRate = 115200
+                    canBreak = True
+                else:
+                    try:
+                        boardRate = int(boardRateInput)
+                    except KeyboardInterrupt:
+                        print("\n[+] Exiting...")
+                        exit()
+                    except Exception as e:
+                        print("\n[!] Please enter a number!")
+                        continue
+                    canBreak = True
+                print("[+] Baudrate => '" + str(boardRate) + "'")
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            exit()
+        try:
+            global espChannel
+            canBreak = False
+            while not canBreak:
+                print("\n[?] Please select which channel to use:\n")
+                espChannelInput = input("channel> ")
+                if espChannelInput == "":
+                    print("\n[!] Please enter a number!")
+                    continue
+                else:
+                    try:
+                        espChannel = int(espChannelInput)
+                        espChannel = str(espChannelInput)
+                    except KeyboardInterrupt:
+                        print("\n[+] Exiting...")
+                        exit()
+                    except Exception as e:
+                        print("\n[!] Please enter a number!")
+                        continue
+                    canBreak = True
+                print("[+] Channel => '" + str(espChannel) + "'")
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            exit()
+        time.sleep(0.5)
+        showESP()
+    elif option == "2":
+        global monitor_iface
+        global ifaceChannel
+        try:
+            print("\n[?] Please enter the name of your WiFi interface (in monitor mode):\n")
+            monitor_iface = input("interface> ")
+            print("[+] Monitor interface => '" + str(monitor_iface) + "'")
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            exit()
+        try:
+            print("\n[?] Please select which channel to use:\n")
+            ifaceChannel = input("channel> ")
+            print("[+] Channel => '" + str(ifaceChannel) + "'")
+        except KeyboardInterrupt:
+            print("\n[+] Exiting...")
+            exit()
+        print("\n[+] Setting channel to " + str(ifaceChannel) + "...")
+        os.system("iwconfig " + monitor_iface + " channel " + str(ifaceChannel))
+        time.sleep(0.5)
+        showIface()
+    elif option == "3":
+        print("[+] Starting Demo visualizer...")
+        time.sleep(0.5)
+        showDemo()
+    else:
+        print("[!] Please choose a number from the list.")
+        menu()
 header()
 menu()
