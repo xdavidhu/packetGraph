@@ -47,6 +47,8 @@ def visualize():
         line = ""
         for num in allPackets:
             num *= multiplicator
+            if num == 0:
+                num = 1
             if num >= index:
                 line = line + "#"
             else:
