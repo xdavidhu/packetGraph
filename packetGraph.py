@@ -1,4 +1,4 @@
-import random, time
+import random, time, pyshark
 import os
 
 # VISUALIZER VARIABLES
@@ -110,33 +110,25 @@ def showESP():
         print("\n[!] Serial disconnected... Exiting...")
         exit()
 
-def ifaceCounter(pckt):
+def ifaceCounter(pkt):
     global ifacePackets
     ifacePackets += 1
 
 def ifaceSniffer():
-    import sys, logging
-    logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
     global sniffError
-    try:
-        from scapy.all import sniff
-    except ImportError:
-        print("\n[!] Package 'Scapy' not found... Make sure to install the requirements with 'pip3 install -r requirements.txt'.")
-        sniffError = True
-        sys.exit()
     global stoppingIface
     global monitor_iface
     global sniffStarted
-    while True:
-        if not stoppingIface:
-            try:
-                sniffStarted = True
-                sniff(iface=monitor_iface, prn=ifaceCounter)
-            except:
-                sniffError = True
-                sys.exit()
-        else:
+    if not stoppingIface:
+        try:
+            capture = pyshark.LiveCapture(interface=monitor_iface)
+            sniffStarted = True
+            capture.apply_on_packets(ifaceCounter)
+        except:
+            sniffError = True
             sys.exit()
+    else:
+        sys.exit()
 
 def showIface():
     import time, threading

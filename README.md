@@ -8,6 +8,12 @@ Displays the WiFi traffic around you in a nice terminal graph.
 
 To scan the traffic you can either use a standard WiFi interface or an ESP8266!
 
+**Install the requirements**
+
+`sudo apt update && sudo apt install tshark python3-pip -y`
+
+`sudo pip3 install -r requirements.txt`
+
 **WiFi interface (e.g. USB dongle)**  
 
 Start monitor mode on your WiFi card: `airmon-ng start <interface>`  
@@ -20,5 +26,6 @@ Make sure your card supports monitor mode!
 Flash the esp8266_packet_counter onto your ESP8266. You can either use the Arduino sketch or the .bin file.  
 Then just plug the ESP8266 in over USB.  
 
-**Start the program**  
-`python3 packetGraph.py`
+**Start the program**
+
+`sudo python3 packetGraph.py`
