@@ -1,5 +1,7 @@
 # Packet Graph
 
+### ⚠️ Warning! This project is no longer maintained and may not work as excepted.
+
 Displays the WiFi traffic around you in a nice terminal graph.
 
 ![Screenshot of PacketGraph](https://raw.githubusercontent.com/spacehuhn/packetGraph/master/screenshot.jpg)
